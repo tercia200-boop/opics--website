@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sessões de Trabalho — Projecto OPICS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #002B49;
+    --navy-light: #004B75;
+    --gold: #C5A059;
+    --gold-light: #E5C483;
+    --text: #1C2833;
+    --muted: #566573;
+    --bg-light: #F4F6F8;
+    --border: #E5E8E8;
+    --blue-lightest: #F0F4F8;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* NAVBAR */
+  nav {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo-img {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+  }
+  .project-badge {
+    background: var(--blue-lightest);
+    color: var(--navy);
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 13px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,43,73,0.1);
+  }
+  .entity-list {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--navy);
+    letter-spacing: 1px;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: #ffffff;
+    padding: 80px 0 60px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 40px;
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-image-wrapper { display: none; }
+  }
+  .hero-tag {
+    color: var(--gold-light);
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    line-height: 1.15;
+    margin-bottom: 20px;
+    font-weight: 900;
+  }
+  .hero p.subtitle {
+    font-size: 18px;
+    color: rgba(255,255,255,0.85);
+    max-width: 600px;
+    line-height: 1.5;
+  }
+
+  /* CAROUSEL AUTOMÁTICO */
+  .hero-image-wrapper {
+    position: relative;
+    height: 320px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .carousel-track {
+    display: flex;
+    width: 200%;
+    height: 100%;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .carousel-slide {
+    width: 50%;
+    height: 100%;
+    position: relative;
+  }
+  .carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .carousel-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: 20px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .carousel-nav {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+  .carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .carousel-dot.active {
+    background: var(--gold-light);
+    width: 24px;
+    border-radius: 6px;
+  }
+
+  /* ÂMBITO */
+  .scope-section {
+    margin-top: -30px;
+    position: relative;
+    z-index: 20;
+  }
+  .scope-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-top: 4px solid var(--gold);
+  }
+  .scope-card h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--navy);
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  .scope-card p {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .pendencies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .pendency-item {
+    background: var(--blue-lightest);
+    border-left: 4px solid var(--navy);
+    padding: 16px;
+    border-radius: 0 8px 8px 0;
+  }
+  .pendency-item h4 {
+    color: var(--navy);
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .pendency-item p {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* ESPECIALISTAS */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--navy);
+    margin: 50px 0 24px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .specialists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+  }
+  .specialist-card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .specialist-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+  .specialist-avatar {
+    width: 60px;
+    height: 60px;
+    background: var(--navy);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+    font-family: 'Playfair Display', serif;
+    border: 2px solid var(--gold);
+  }
+  .specialist-info h3 {
+    font-size: 16px;
+    color: var(--navy);
+    margin-top: 2px;
+  }
+
+  /* AGENDA */
+  .agenda-wrapper {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 60px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  }
+  .agenda-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .agenda-table th {
+    background: var(--navy);
+    color: #ffffff;
+    text-align: left;
+    padding: 16px 24px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .agenda-table td {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .agenda-table tr:last-child td { border-bottom: none; }
+  .agenda-table tr:nth-child(even) { background: #FAFBFB; }
+  
+  .day-badge { font-weight: 700; color: var(--navy); }
+  .time-badge {
+    font-family: 'DM Mono', monospace;
+    background: var(--blue-lightest);
+    color: var(--navy-light);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .topic-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .topic-tag.renda-fixa { background: #EAF2F8; color: #2471A3; }
+  .topic-tag.impostos { background: #FEF9E7; color: #B7950B; }
+  .topic-tag.fx { background: #E8F8F5; color: #117A65; }
+  .topic-tag.definir { background: #F2F4F4; color: #7F8C8D; }
+
+  footer {
+    background: var(--navy);
+    color: #ffffff;
+    padding: 40px 0;
+    text-align: center;
+    font-size: 14px;
+    border-top: 4px solid var(--gold);
+  }
+  footer p { color: rgba(255,255,255,0.6); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+  <nav>
+    <div class="container nav-container">
+      <div class="logo-area">
+        <img src="bai.jpg" alt="Logótipo BAI" class="logo-img" />
+        <span class="project-badge">PROJECTO OPICS</span>
+      </div>
+      <div class="entity-list">
+        BAI &bull; INM &bull; TECIEM
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="hero-tag">Sessões de Aceleração Onsite</span>
+        <h1>Contabilização do Projecto OPICS</h1>
+        <p class="subtitle">Alinhamento estratégico e técnico focado na entrega da frente de trabalho financeira e arquitectural.</p>
+      </div>
+      
+      <div class="hero-image-wrapper">
+        <div class="carousel-track" id="carouselTrack">
+          <div class="carousel-slide">
+            <img src="Banco-BAI-1024x683.jpeg" alt="Sessão de Trabalho BAI" />
+            <div class="carousel-overlay">Sessões de Trabalho de Contabilização</div>
+          </div>
+          <div class="carousel-slide">
+            <img src="bai.jpg" alt="Banco BAI" />
+            <div class="carousel-overlay">Alinhamento Integrado — BAI / INM / TECIEM</div>
+          </div>
+        </div>
+        <div class="carousel-nav">
+          <div class="carousel-dot active" onclick="setSlide(0)"></div>
+          <div class="carousel-dot" onclick="setSlide(1)"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    
+    <section class="scope-section">
+      <div class="scope-card">
+        <h2>Âmbito e Objectivo das Sessões</h2>
+        <p>O objectivo central é finalizar as pendências relacionadas com a frente de trabalho que tem sido a mais desafiadora deste projecto: <strong>a contabilidade</strong>. As sessões visam acelerar e estruturar as entregas cruciais do sistema financeiro.</p>
+        
+        <div class="pendencies-grid">
+          <div class="pendency-item">
+            <h4>Renda Fixa</h4>
+            <p>Conclusão do mapeamento e fluxos operacionais.</p>
+          </div>
+          <div class="pendency-item">
+            <h4>Impostos</h4>
+            <p>Validação de regras fiscais e parametrização.</p>
+          </div>
+          <div class="pendency-item">
+            <h4>Comissões</h4>
+            <p>Ajustes e regras de contabilização pendentes.</p>
+          </div>
+          <div class="pendency-item">
+            <h4>Documento de FX</h4>
+            <p>Finalização da documentação contabilística de Foreign Exchange.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Especialistas</h2>
+      <div class="specialists-grid">
+        <div class="specialist-card">
+          <div class="specialist-avatar">VB</div>
+          <div class="specialist-info">
+            <h3>VIJAYA BHAGAVAN GUPTA KOTTA</h3>
+          </div>
+        </div>
+        <div class="specialist-card">
+          <div class="specialist-avatar">AR</div>
+          <div class="specialist-info">
+            <h3>ASHUTOSH RATH</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Agenda Operacional Onsite</h2>
+      <div class="agenda-wrapper">
+        <table class="agenda-table">
+          <thead>
+            <tr>
+              <th width="20%">Dia</th>
+              <th width="20%">Horário</th>
+              <th width="25%">Tema</th>
+              <th width="35%">Actividade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="day-badge">Segunda-feira, 15</span></td>
+              <td><span class="time-badge">09:00 – 12:30</span></td>
+              <td><span class="topic-tag renda-fixa">Renda Fixa</span></td>
+              <td>Sessão de trabalho</td>
+            </tr>
+            <tr>
+              <td><span class="day-badge">Segunda-feira, 15</span></td>
+              <td><span class="time-badge">14:30 – 16:00</span></td>
+              <td><span class="topic-tag renda-fixa">Renda Fixa</span></td>
+              <td>Discussão e trabalho sobre os tópicos da manhã</td>
+            </tr>
+            <tr>
+              <td><span class="day-badge">Terça-feira, 16</span></td>
+              <td><span class="time-badge">09:00 – 12:30</span></td>
+              <td><span class="topic-tag impostos">Impostos</span></td>
+              <td>Sessão de trabalho</td>
+            </tr>
+            <tr>
+              <td><span class="day-badge">Terça-feira, 16</span></td>
+              <td><span class="time-badge">14:30 – 16:00</span></td>
+              <td><span class="topic-tag impostos">Impostos</span></td>
+              <td>Discussão e trabalho sobre os tópicos da manhã</td>
+            </tr>
+            <tr>
+              <td><span class="day-badge">Quarta-feira, 17</span></td>
+              <td><span class="time-badge">09:00 – 12:30</span></td>
+              <td><span class="topic-tag fx">FX (Foreign Exchange)</span></td>
+              <td>Sessão de trabalho</td>
+            </tr>
+            <tr>
+              <td><span class="day-badge">Quarta-feira, 17</span></td>
+              <td><span class="time-badge">14:30 – 16:00</span></td>
+              <td><span class="topic-tag fx">FX (Foreign Exchange)</span></td>
+              <td>Discussão e trabalho sobre os tópicos da manhã</td>
+            </tr>
+            <tr>
+              <td><span class="day-badge">Quinta-feira, 18</span></td>
+              <td><span class="time-badge">09:00 – 12:30</span></td>
+              <td><span class="topic-tag definir">A definir</span></td>
+              <td>Sessão de trabalho conforme progresso</td>
+            </tr>
+            <tr>
+              <td><span class="day-badge">Quinta-feira, 18</span></td>
+              <td><span class="time-badge">14:30 – 16:00</span></td>
+              <td><span class="topic-tag definir">A definir</span></td>
+              <td>Discussão e trabalho sobre os tópicos da manhã</td>
+            </tr>
+            <tr>
+              <td><span class="day-badge">Sexta-feira, 19</span></td>
+              <td><span class="time-badge">09:00 – 12:30</span></td>
+              <td><span class="topic-tag definir">A definir</span></td>
+              <td>Sessão de trabalho conforme progresso</td>
+            </tr>
+            <tr>
+              <td><span class="day-badge">Sexta-feira, 19</span></td>
+              <td><span class="time-badge">14:30 – 16:00</span></td>
+              <td><span class="topic-tag definir">A definir</span></td>
+              <td>Discussão e trabalho sobre os tópicos da manhã</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <h3>BAI &bull; INM &bull; TECIEM</h3>
+      <p>&copy; 2026 Projecto OPICS — Alinhamento e Contabilização. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    let currentIdx = 0;
+    const track = document.getElementById('carouselTrack');
+    const dots = document.querySelectorAll('.carousel-dot');
+    
+    function setSlide(idx) {
+      currentIdx = idx;
+      track.style.transform = `translateX(-${idx * 50}%)`;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === idx);
+      });
+    }
+
+    setInterval(() => {
+      let nextIdx = (currentIdx + 1) % 2;
+      setSlide(nextIdx);
+    }, 4000);
+  </script>
+</body>
+</html>
